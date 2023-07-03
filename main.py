@@ -3,86 +3,6 @@ from datetime import date
 import pickle
 
 
-def input_error(func):
-    def inner(*args, **kwargs):
-        try:
-            return func(*args, **kwargs)
-        except KeyError:
-            return "Contact not found"
-        except ValueError:
-            return "Invalid input"
-        except IndexError:
-            return "Invalid command"
-    return inner
-
-
-@input_error
-def add_contact(command):
-    # Розділимо рядок команди на ім'я та номер телефону
-    name, phone = command.split(' ', 1)
-    # Збережемо контакт у словник
-    contacts[name] = phone
-    return "Contact added successfully"
-
-
-@input_error
-def change_contact(command):
-    # Розділимо рядок команди на ім'я та номер телефону
-    name, phone = command.split(' ', 1)
-    # Змінимо номер телефону для заданого контакту
-    contacts[name] = phone
-    return "Contact updated successfully"
-
-
-@input_error
-def show_phone(command):
-    # Виділимо ім'я контакту з команди
-    name = command.strip()
-    # Отримаємо номер телефону для заданого контакту
-    phone = contacts[name]
-    return f"The phone number for {name} is {phone}"
-
-
-def show_all_contacts():
-    # Виведемо всі контакти
-    if not contacts:
-        return "No contacts found"
-    else:
-        output = ""
-        for name, phone in contacts.items():
-            output += f"{name}: {phone}\n"
-        return output.strip()
-
-
-def main():
-    print("How can I help you?")
-    while True:
-        command = input("> ").lower()
-        if command == "hello":
-            print("How can I help you?")
-        elif command.startswith("add"):
-            result = add_contact(command[4:].strip())
-            print(result)
-        elif command.startswith("change"):
-            result = change_contact(command[7:].strip())
-            print(result)
-        elif command.startswith("phone"):
-            result = show_phone(command[6:].strip())
-            print(result)
-        elif command == "show all":
-            result = show_all_contacts()
-            print(result)
-        elif command in ["good bye", "close", "exit"]:
-            print("Good bye!")
-            break
-        else:
-            print("Invalid command. Please try again.")
-
-
-# Словник для зберігання контактів
-contacts = {}
-
-
 class Field:
     def __init__(self, value=None):
         self._value = value
@@ -104,7 +24,10 @@ class Name(Field):
 
 
 class Phone(Field):
-    pass
+    @Field.value.setter
+    def value(self, new_value):
+        # Add any additional validation or formatting for the phone number
+        self._value = new_value
 
 
 class Birthday(Field):
@@ -201,6 +124,86 @@ class AddressBookIterator:
             self.index += 1
             return record
         raise StopIteration
+
+
+def input_error(func):
+    def inner(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except KeyError:
+            return "Contact not found"
+        except ValueError:
+            return "Invalid input"
+        except IndexError:
+            return "Invalid command"
+    return inner
+
+
+@input_error
+def add_contact(command):
+    # Розділимо рядок команди на ім'я та номер телефону
+    name, phone = command.split(' ', 1)
+    # Збережемо контакт у словник
+    contacts[name] = phone
+    return "Contact added successfully"
+
+
+@input_error
+def change_contact(command):
+    # Розділимо рядок команди на ім'я та номер телефону
+    name, phone = command.split(' ', 1)
+    # Змінимо номер телефону для заданого контакту
+    contacts[name] = phone
+    return "Contact updated successfully"
+
+
+@input_error
+def show_phone(command):
+    # Виділимо ім'я контакту з команди
+    name = command.strip()
+    # Отримаємо номер телефону для заданого контакту
+    phone = contacts[name]
+    return f"The phone number for {name} is {phone}"
+
+
+def show_all_contacts():
+    # Виведемо всі контакти
+    if not contacts:
+        return "No contacts found"
+    else:
+        output = ""
+        for name, phone in contacts.items():
+            output += f"{name}: {phone}\n"
+        return output.strip()
+
+
+def main():
+    print("How can I help you?")
+    while True:
+        command = input("> ").lower()
+        if command == "hello":
+            print("How can I help you?")
+        elif command.startswith("add"):
+            result = add_contact(command[4:].strip())
+            print(result)
+        elif command.startswith("change"):
+            result = change_contact(command[7:].strip())
+            print(result)
+        elif command.startswith("phone"):
+            result = show_phone(command[6:].strip())
+            print(result)
+        elif command == "show all":
+            result = show_all_contacts()
+            print(result)
+        elif command in ["good bye", "close", "exit"]:
+            print("Good bye!")
+            break
+        else:
+            print("Invalid command. Please try again.")
+
+
+# Словник для зберігання контактів
+contacts = {}
 
 
 # Запуск основної функції
